@@ -33,32 +33,45 @@ jobs:
             New-Item -ItemType Directory -Force 'backend/static' | Out-Null
 
             foreach ($f in @('server.py', 'backend_entry.py', 'requirements.txt')) {
-              if (!(Test-Path $f)) { throw "Brakuje pliku: $f" }
+              if (!(Test-Path $f)) {
+                throw "Brakuje pliku: $f"
+              }
               Copy-Item $f "backend/$f"
             }
 
             foreach ($f in @('index.html', 'style.css', 'app.js', 'favicon.png', 'vilo-icon.png')) {
-              if (!(Test-Path $f)) { throw "Brakuje pliku: $f" }
+              if (!(Test-Path $f)) {
+                throw "Brakuje pliku: $f"
+              }
               Copy-Item $f "backend/static/$f"
             }
           }
 
           foreach ($f in @('backend/backend_entry.py', 'backend/requirements.txt', 'backend/static/index.html', 'main.js', 'package.json', 'vilo.ico')) {
-            if (!(Test-Path $f)) { throw "Brakuje pliku: $f" }
+            if (!(Test-Path $f)) {
+              throw "Brakuje pliku: $f"
+            }
           }
 
       - name: Instalacja bibliotek
+        shell: pwsh
         run: |
           python -m pip install --upgrade pip
           python -m pip install -r backend/requirements.txt
           python -m pip install pyinstaller
+
+          if ($LASTEXITCODE -ne 0) {
+            throw 'Blad instalacji bibliotek'
+          }
 
       - name: Budowanie backendu Windows
         shell: pwsh
         run: |
           python -m PyInstaller --noconfirm --clean --onedir --windowed --name vilo-server --distpath backend-dist --collect-all uvicorn --collect-all fastapi --add-data "backend/static;static" --paths backend backend/backend_entry.py
 
-          if ($LASTEXITCODE -ne 0) { throw 'Blad budowania backendu' }
+          if ($LASTEXITCODE -ne 0) {
+            throw 'Blad budowania backendu'
+          }
 
           if (!(Test-Path 'backend-dist/vilo-server/vilo-server.exe')) {
             throw 'Brak vilo-server.exe'
@@ -70,14 +83,34 @@ jobs:
           CSC_IDENTITY_AUTO_DISCOVERY: 'false'
         run: |
           npm install --no-audit --no-fund
-          if ($LASTEXITCODE -ne 0) { throw 'Blad npm install' }
 
-          npm run dist:win
-          if ($LASTEXITCODE -ne 0) { throw 'Blad instalatora' }
+          if ($LASTEXITCODE -ne 0) {
+            throw 'Blad npm install'
+          }
 
-      - name: Gotowy instalator
+          npm run dist:win -- --publish never
+
+          if ($LASTEXITCODE -ne 0) {
+            throw 'Blad instalatora'
+          }
+
+      - name: Sprawdz instalator
+        shell: pwsh
+        run: |
+          $installers = @(Get-ChildItem 'release/VILO-Setup-*.exe' -ErrorAction SilentlyContinue)
+
+          if ($installers.Count -eq 0) {
+            throw 'Nie znaleziono instalatora VILO'
+          }
+
+          foreach ($installer in $installers) {
+            Write-Host "Gotowy instalator: $($installer.Name)"
+          }
+
+      - name: Udostepnij instalator
         uses: actions/upload-artifact@v4
         with:
           name: VILO-Windows-Instalator
           path: release/VILO-Setup-*.exe
           if-no-files-found: error
+          retention-days: 30
