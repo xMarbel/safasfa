@@ -1,0 +1,13 @@
+VILO 0.3 — BEZPIECZEŃSTWO TESTÓW
+
+Ta aplikacja to rozbudowana lokalna wersja testowa, a nie produkt
+przygotowany do publikacji w Internecie.
+- Nie wystawiaj backendu na publicznym IP ani na porcie routera.
+- Używaj wyłącznie osobnych haseł testowych (email nie jest weryfikowany).
+- Brak odzyskiwania hasła i 2FA, brak audytu produkcyjnego.
+- Przesłane pliki są filtrowane po rozszerzeniu, ale nie skanowane antywirusowo.
+- Nie uruchamiaj obcego kodu botów; kreator obsługuje tylko bezpieczne odpowiedzi.
+- Instalator `.exe` nie jest podpisany, więc Windows Smart App Control może
+  go zablokować. NIE WYŁĄCZAJ ZABEZPIECZEŃ WINDOWS.
+- Przed przenoszeniem istniejących danych z data/ zrób kopię zapasową.
+- Nie kopiuj folderu z bazą danych do publicznego repozytorium GitHub.

@@ -1,0 +1,25 @@
+VILO 0.4.0 — RAPORT PRAC
+=======================
+NAPRAWY:
+1. backend/backend_entry.py nie wywołuje webbrowser.open().
+   Tylko tryb programistyczny start.py otwiera przeglądarkę.
+2. backend_entry importuje server.app bezpośrednio: PyInstaller
+   może dołączyć server.py (wcześniej import był tylko stringiem).
+3. main.js uruchamia backend w tle, czeka na /api/health,
+   tworzy osobne okno Electron, zapisuje logi w danych użytkownika.
+4. GitHub Actions buduje pakiet backendu i uruchamia smoke test
+   gotowego exe, dopiero potem składa instalator Electron NSIS.
+5. Włączono bibliotekę WebSocket jako zależność backendu.
+6. Dane lokalne są zapisywane poza folderem instalacji i zachowywane
+   po aktualizacji aplikacji z zachowaniem identyfikatora appId.
+
+SPRAWDZONE W ŚRODOWISKU TWORZENIA:
+- 3 testy API/backendu (serwery i uprawnienia, grupy, profile i obrazy).
+- HTTP 200: /api/health, /, /static/app.js, /static/style.css.
+- Poprawność składni JavaScript i Pythona.
+
+NIE SPRAWDZONE W TYM ŚRODOWISKU:
+- Zbudowanie instalatora na komputerze Windows (brak środowiska Windows
+  i dostępu do pobierania zależności elektronowych).
+- Windows Smart App Control i podpis cyfrowy.
+- Rozmowy między różnymi komputerami w Internecie.

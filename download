@@ -1,0 +1,15 @@
+node_modules/
+release/
+build/
+dist/
+backend-dist/
+__pycache__/
+*.pyc
+*.db
+*.sqlite
+*.sqlite3
+backend/data/
+data/
+*.log
+.env
+.venv/
